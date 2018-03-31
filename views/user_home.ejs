@@ -1,0 +1,169 @@
+<% include partials/header %>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">TP-01</a>
+      </div>
+      <ul class="nav navbar-nav" style="float:right">
+        <li><a id="add" href="#" data-toggle="modal" data-target="#addModal">Adicionar Filme</a></li>
+        <li><a href="/">Sair</a></li>
+      </ul>
+    </div>
+  </nav>
+<div class="container">
+    <h1>Bem Vindo <%= username %></h1>
+    <div id="filmes" class="row"></div>
+</div>
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h3 class="modal-title" id="exampleModalLabel">Adicione Seu Filme</h3>
+
+        </div>
+        <div class="modal-body">
+          <form id="formAdd">
+            <div class="form-group">
+                <label>Nome:</label>
+                <input class="form-control" type="text" id="nome">
+            </div>  
+            <div class="form-group">
+                <label>Gênero:</label>
+                <input class="form-control" type="text" id="genero">
+            </div>
+            <div class="form-group">
+                <label>Diretor:</label>
+                <input class="form-control" type="text" id="diretor">
+            </div>  
+            <div class="form-group">
+                <label>Faixa Etaria:</label>
+                <input class="form-control" placeholder="L, 10, 12, 14, 16, 18" type="text" id="faixaEtaria">
+            </div>
+            <div class="form-group">
+                <label>Ano</label>
+                <input class="form-control" type="number" id="ano">
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Adicionar Filme</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+<script>
+  $('#add').on('shown.bs.modal', function () {
+        $('#addModal').trigger('focus')
+    })
+</script>
+<script>
+  let filmesDiv = document.getElementById("filmes");
+  let username = "<%= username %>";
+  if(!username){
+    window.location.replace("/");
+  }
+  //Firebase Setup
+  var config = {
+    
+  };
+  firebase.initializeApp(config);
+  let db = firebase.database();
+  let reference = db.ref(`users/${username}/Filmes`);
+  reference.on('value', function(data){
+    filmes = data.val();
+    console.log(filmes);
+    geraFilmes();
+    }, function(err){
+    console.log(err);
+    });
+  
+  document.getElementById("formAdd").addEventListener('submit', function(e){
+    e.preventDefault();
+    let nome = select("nome");
+    let gen = select("genero");
+    let dir = select("diretor");
+    let faixa = select("faixaEtaria");
+    let ano = select("ano");
+    let nFilme = {
+      nome : nome.value,
+      genero : gen.value,
+      diretor: dir.value,
+      faixaEtaria : faixa.value,
+      ano: parseInt(ano.value)
+    }
+    nome.value = "";
+    gen.value = "";
+    dir.value = "";
+    faixa.value = "";
+    ano.value = "";
+    let ref = db.ref(`users/${username}/Filmes/${nFilme.nome}`);
+    ref.set(nFilme);
+    $(function () {
+      $('#addModal').modal('toggle');
+    });
+    console.log(nFilme);
+  });
+  
+function select(id){
+  return document.getElementById(id);
+}
+
+function geraFilmes(){
+  //filmes
+  filmesDiv.innerHTML = "";
+    for(filme in filmes){
+    //Filme Div
+    var div = document.createElement('div');
+    div.className = "col-md-3 jumbotron border-dark";
+    div.style.margin = "1px";
+    div.style.width = "33%";
+    //btn delete
+    var btn = document.createElement('button');
+    btn.className = "btn btn-danger center-block";
+    btn.innerHTML = "Deletar Filme";
+    btn.value = filmes[filme].nome;
+    btn.addEventListener('click', function(){
+      let nome = this.value;
+      let ref  = db.ref(`users/${username}/Filmes`);
+      ref.child(nome).remove();
+      console.log(this.value);
+    });
+    //Titulo
+    var titulo = document.createElement("h3");
+    titulo.className = "text-center";
+    titulo.innerHTML = filmes[filme].nome;
+    //Genero
+    var genero = document.createElement("h4");
+    genero.className = "text-center";
+    genero.innerHTML = "Gênero: "+filmes[filme].genero;
+    // Diretor
+    var diretor = document.createElement("h4");
+    diretor.className = "text-center";
+    diretor.innerHTML = "Diretor: "+filmes[filme].diretor;
+    //Ano
+    var ano = document.createElement("h4");
+    ano.className = "text-center";
+    ano.innerHTML = "Ano: "+filmes[filme].ano;
+    //Faixa Etaria
+    var faixa = document.createElement("h4");
+    faixa.className = "text-center";
+    faixa.innerHTML = "Faixa Etária: "+filmes[filme].faixaEtaria;
+    //Append Childs
+    div.appendChild(titulo);
+    div.appendChild(genero);
+    div.appendChild(diretor);
+    div.appendChild(ano);
+    div.appendChild(faixa);
+    div.appendChild(btn);
+    filmesDiv.appendChild(div);
+  }
+  console.log(filmes);
+}
+  
+</script>
+<% include partials/footer %>

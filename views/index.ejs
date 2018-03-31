@@ -1,0 +1,85 @@
+<% include partials/header %>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">TP-01</a>
+      </div>
+      <ul class="nav navbar-nav" style="float:right">
+        <li><a id="sing" href="#" data-toggle="modal" data-target="#singin">Sing in</a></li>
+        <li><a id="singu" href="#" data-toggle="modal" data-target="#singup">Sing up</a></li>
+      </ul>
+    </div>
+  </nav>
+<div class="container">
+    <h1>Acesse sua Lista de Filmes Online ou no App Android</h1>
+    <%if(erro) {%>
+    <div class="bg-danger"><h2 class="text-danger text-center"><%= erro %></h2></div>
+    <% } %>
+</div>
+<div class="modal fade" id="singin" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h3 class="modal-title" id="exampleModalLabel">Realize Log in Para Proceder</h3>
+
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="/user/singin">
+            <div class="form-group">
+                <label>Username:</label>
+                <input class="form-control" type="text" name="username">
+            </div>  
+            <div class="form-group">
+                <label>Senha:</label>
+                <input class="form-control" type="password" name="senha">
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Log in</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="singup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+    
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h3 class="modal-title" id="exampleModalLabel">Cadastre-se Para Proceder</h3>
+    
+            </div>
+            <div class="modal-body">
+              <form method="POST" action="/user/singup">
+                <div class="form-group">
+                    <label>Username:</label>
+                    <input class="form-control" type="text" name="username">
+                </div>  
+                <div class="form-group">
+                    <label>Senha:</label>
+                    <input class="form-control" type="senha" name="senha">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Sing Up</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+  <script>
+    $('#sing').on('shown.bs.modal', function () {
+        $('#singin').trigger('focus')
+    })
+    $('#singu').on('shown.bs.modal', function () {
+        $('#singup').trigger('focus')
+    })
+  </script>
+<% include partials/footer %>
